@@ -26,7 +26,23 @@ PHOTORESISTOR PART
     Connect the other side of the resistor to GND.
 */
 
+/*
+MODE SWITCHER PART
+we use a button to change state MANUAL to AUTO or viceversa.
+We use two indicators lights. 
+One for manual and other for automatic.
 
+-Hardware connections:
+  Button:
+    Connect one side of button to PIN2 that will read the pushing
+    Connect other side of button to ground to close the circuit
+  M INDICATOR:
+    Connect the M light with a 250 Ohm resistor to an LED, 
+      ground it & set its input voltage to pin7 
+  A INDICATOR:
+    Connect the M light with a 250 Ohm resistor to an LED, 
+      ground it & set its input voltage to pin6
+*/
 //create constants to name the pins we're using.
 // This will make it easier to follow the code below.
 const int lightAnalogSensorPin = 0;
