@@ -48,6 +48,8 @@ One for manual and other for automatic.
 const int lightAnalogSensorPin = 0;
 const int ledPin = 9;
 const int buttonSmart = 2;
+const int manualIndicatorPin = 7;
+const int autoIndicatorPin = 6;
 
 // We'll also set up some global variables :
 int lightLevel, high = 0, low = 1023;//to handle light level
@@ -63,7 +65,8 @@ void setup()
 
   pinMode(buttonSmart, INPUT_PULLUP);
 
-  pinMode(7, OUTPUT);
+  pinMode(manualIndicatorPin, OUTPUT);
+  pinMode(autoIndicatorPin, OUTPUT);
   
 }
 
@@ -121,34 +124,40 @@ void loop()
   // brightness of the LED:
 
   
-
-  while(smart){//Handle automatic functioning here
-    autoTune();// have the Arduino do the lightsensor autotune
-    delay(100);
+  /*AUTOMATIC*/
+  while(smart){
+    //autoTune();// have the Arduino do the lightsensor autotune
     //measure the voltage coming from the photoresistor resistor pair
     //Range: [0-1023] (0 for 0 Volts and 1023 for 5V);
     lightLevel = analogRead(lightAnalogSensorPin);
     
     //send signal to our light/s;
-    analogWrite(ledPin, 255-lightLevel);
+    analogWrite(ledPin, lightLevel);
 
-    //turn off manual indicator
-    digitalWrite(7, LOW);
-    
     //check if state has been changed
-    //delay(500);
     if(digitalRead(buttonSmart) == LOW){//read the pushbutton value into a variable
+      delay(300);
       smart = false;
+      //auto indicator off
+      digitalWrite(autoIndicatorPin, LOW);
+      //manual indicator on
+      digitalWrite(manualIndicatorPin, HIGH);
+      Serial.println("MANUAL MODE ON");
     }
   }
-  
-  while(!smart){//Handle manual functioning here
-    delay(100);
-    //Turn ON Manual indicator
-    digitalWrite(7, HIGH);
+
+  /*MANUAL*/
+  while(!smart){
+    
     //check if state has been changed to automatic
     if(digitalRead(buttonSmart) == LOW){//read the pushbutton value into a variable
+      delay(300);
       smart = true;
+      //manual indicator off
+      digitalWrite(manualIndicatorPin, LOW);
+      //auto indicator on
+      digitalWrite(autoIndicatorPin, HIGH);
+      Serial.println("AUTOMATIC MODE ON");
     }
   }
 
@@ -196,10 +205,6 @@ void autoTune()
 
   // In this function, the Arduino will keep track of the highest
   // and lowest values that we're reading from analogRead().
-
-  // If you look at the top of the sketch, you'll see that we've
-  // initialized "low" to be 1023. We'll save anything we read
-  // that's lower than that:
 
   if (lightLevel < low)
   {
