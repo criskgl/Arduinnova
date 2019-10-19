@@ -43,36 +43,42 @@ One for manual and other for automatic.
     Connect the M light with a 250 Ohm resistor to an LED, 
       ground it & set its input voltage to pin6
 */
-//create constants to name the pins we're using.
-// This will make it easier to follow the code below.
+//NAME USED PINS
 const int lightAnalogSensorPin = 0;
-const int ledPin = 9;
+const int lighLevelLedObserver = 9;
 const int buttonSmart = 2;
+
 const int manualIndicatorPin = 7;
 const int autoIndicatorPin = 6;
 
-// We'll also set up some global variables :
+const int leftShortPin = 10;
+
+//GLOBAL VARIABLES :
 int lightLevel, high = 0, low = 1023;//to handle light level
 bool smart = true;//to switch between MANUAL or AUTO
-
+bool nightMode = false;
 
 void setup()
 {
   Serial.begin(9600);
   // We'll set up the LED pin to be an output.
-  pinMode(ledPin, OUTPUT);
+  pinMode(lighLevelLedObserver, OUTPUT);
   //We don't need to do anything special to use the analog input for the input light sensor, we just read it
 
-  pinMode(buttonSmart, INPUT_PULLUP);
+  pinMode(buttonSmart, INPUT_PULLUP);//mode switcher M/A
 
   pinMode(manualIndicatorPin, OUTPUT);
   pinMode(autoIndicatorPin, OUTPUT);
-  
+
+  pinMode(leftShortPin, OUTPUT);
 }
 
 
 void loop()
 {
+  //**********************TO-DO TURN ON POSITION LIGHTS ALWAYS ON!!!
+  
+  
   //measure the voltage coming from the photoresistor resistor pair
   //Range: [0-1023] (0 for 0 Volts and 1023 for 5V) 
   
@@ -126,14 +132,34 @@ void loop()
   
   /*AUTOMATIC*/
   while(smart){
-    //autoTune();// have the Arduino do the lightsensor autotune
+    autoTune();// have the Arduino do the lightsensor autotune
     //measure the voltage coming from the photoresistor resistor pair
     //Range: [0-1023] (0 for 0 Volts and 1023 for 5V);
     lightLevel = analogRead(lightAnalogSensorPin);
-    
-    //send signal to our light/s;
-    analogWrite(ledPin, lightLevel);
 
+    if(nightMode){
+      digitalWrite(leftShortPin, HIGH);
+    }else{
+      digitalWrite(leftShortPin, LOW);
+    }
+    //Check  if we need to turn on short lights
+    if(lightLevel < 500){//NIGHT
+      nightMode = true;
+    }
+    if(lightLevel > 700){//DAY
+      nightMode = false;
+    }
+    static const unsigned long REFRESH_INTERVAL = 1000; // ms
+    static unsigned long lastRefreshTime = 0;
+    
+    if(millis() - lastRefreshTime >= REFRESH_INTERVAL)
+    {
+      lastRefreshTime += REFRESH_INTERVAL;
+                  Serial.println((String)"Light Intensity: "+lightLevel);
+    }
+    //send signal to our light level debugger led;
+    analogWrite(lighLevelLedObserver, 255-lightLevel);
+    
     //check if state has been changed
     if(digitalRead(buttonSmart) == LOW){//read the pushbutton value into a variable
       delay(300);
@@ -148,6 +174,8 @@ void loop()
 
   /*MANUAL*/
   while(!smart){
+    //keep short lights on
+    digitalWrite(leftShortPin, HIGH);
     
     //check if state has been changed to automatic
     if(digitalRead(buttonSmart) == LOW){//read the pushbutton value into a variable
