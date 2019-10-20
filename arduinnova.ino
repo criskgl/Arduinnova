@@ -55,6 +55,8 @@ const int shortPin = 10;
 const int longPin = 11;
 
 //GLOBAL VARIABLES :
+bool initialized = false;
+
 int lightLevel, high = 0, low = 1023;//to handle light level
 bool smart = false;//to switch between MANUAL or AUTO
 bool nightMode = false;
@@ -79,6 +81,21 @@ void setup()
 
 void loop()
 {
+  //Execute only once, everytime system is turned on
+  if(!initialized){
+    initialized = true;
+    if(smart){
+      //manual indicator off
+      digitalWrite(manualIndicatorPin, LOW);
+      //auto indicator on
+      digitalWrite(autoIndicatorPin, HIGH);
+    }else{
+      //auto indicator off
+      digitalWrite(autoIndicatorPin, LOW);
+      //manual indicator off
+      digitalWrite(manualIndicatorPin, HIGH);
+    }
+  }
   //**********************TO-DO TURN ON POSITION LIGHTS ALWAYS ON!!!
   
   
