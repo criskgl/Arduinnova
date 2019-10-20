@@ -51,12 +51,14 @@ const int buttonSmart = 2;
 const int manualIndicatorPin = 7;
 const int autoIndicatorPin = 6;
 
-const int leftShortPin = 10;
+const int shortPin = 10;
+const int longPin = 11;
 
 //GLOBAL VARIABLES :
 int lightLevel, high = 0, low = 1023;//to handle light level
-bool smart = true;//to switch between MANUAL or AUTO
+bool smart = false;//to switch between MANUAL or AUTO
 bool nightMode = false;
+
 
 void setup()
 {
@@ -70,7 +72,8 @@ void setup()
   pinMode(manualIndicatorPin, OUTPUT);
   pinMode(autoIndicatorPin, OUTPUT);
 
-  pinMode(leftShortPin, OUTPUT);
+  pinMode(shortPin, OUTPUT);
+  pinMode(longPin, OUTPUT);
 }
 
 
@@ -130,7 +133,7 @@ void loop()
   // brightness of the LED:
 
   
-  /*AUTOMATIC*/
+  /*-------------------------------AUTOMATIC-------------------------*/
   while(smart){
     autoTune();// have the Arduino do the lightsensor autotune
     //measure the voltage coming from the photoresistor resistor pair
@@ -138,9 +141,9 @@ void loop()
     lightLevel = analogRead(lightAnalogSensorPin);
 
     if(nightMode){
-      digitalWrite(leftShortPin, HIGH);
+      digitalWrite(shortPin, HIGH);
     }else{
-      digitalWrite(leftShortPin, LOW);
+      digitalWrite(shortPin, LOW);
     }
     //Check  if we need to turn on short lights
     if(lightLevel < 500){//NIGHT
@@ -171,12 +174,47 @@ void loop()
       Serial.println("MANUAL MODE ON");
     }
   }
-
-  /*MANUAL*/
+  /*-------------------------------MANUAL----------------------------*/
   while(!smart){
     //keep short lights on
-    digitalWrite(leftShortPin, HIGH);
     
+    String userOrder = "";
+    if(Serial.available() != 0){
+      userOrder = Serial.readString();//read command if any
+    }
+    if(!userOrder.equals("")){
+      if(userOrder.compareTo("SHORT ON") == 10){
+        Serial.println("Turning SHORT ON");
+        digitalWrite(shortPin, HIGH);
+      }
+      else if(userOrder.compareTo("LONG ON") == 10){
+        Serial.println("TURING LONG ON");
+        digitalWrite(longPin, HIGH);
+      }
+      else if(userOrder.compareTo("SHORT OFF") == 10){
+        Serial.println("Turning SHORT OFF");
+        digitalWrite(shortPin, LOW);
+      }
+      else if(userOrder.compareTo("LONG OFF") == 10){
+        Serial.println("Turning LONG OFF");
+        digitalWrite(longPin, LOW);
+      }else if(userOrder.compareTo("FLASH") == 10){
+        Serial.println("Flashing...");
+        digitalWrite(longPin, LOW);
+        delay(200);
+        digitalWrite(longPin, HIGH);
+        delay(200);
+        digitalWrite(longPin, LOW);
+        delay(200);
+        digitalWrite(longPin, HIGH);
+      }
+      else{
+        Serial.println("NOT VALID COMMAND");
+      }
+    }
+
+    
+
     //check if state has been changed to automatic
     if(digitalRead(buttonSmart) == LOW){//read the pushbutton value into a variable
       delay(300);
@@ -186,11 +224,17 @@ void loop()
       //auto indicator on
       digitalWrite(autoIndicatorPin, HIGH);
       Serial.println("AUTOMATIC MODE ON");
+      break;
     }
+
+    
+    
+    
   }
 
   
 }
+
 
 /************************************AUXILIAR FUNCTIONS***********************/
 
