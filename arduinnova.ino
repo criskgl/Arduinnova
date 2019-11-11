@@ -46,45 +46,65 @@ One for manual and other for automatic.
 //NAME USED PINS
 const int lightAnalogSensorPin = 0;
 const int lighLevelLedObserver = 9;
-const int buttonSmart = 2;
+const int buttonSmartPin = 2;
 
 const int manualIndicatorPin = 7;
 const int autoIndicatorPin = 6;
 
 const int shortPin = 10;
+const int shortButtonPin = 1;  
 const int longPin = 11;
+const int longButtonPin = 0;
 
 //GLOBAL VARIABLES :
-bool initialized = false;
-
 int lightLevel, high = 0, low = 1023;//to handle light level
 bool smart = false;//to switch between MANUAL or AUTO
 bool nightMode = false;
 
+bool shortIsOn = false;
+bool longIsOn = false;
+
+bool computerConnected = false;
+
+
+int TRIGpin = 12;
+int ECOpin = 13;
+int LAPSE;
+int DISTANCE;
 
 void setup()
 {
+  pinMode(TRIGpin, OUTPUT);
+  pinMode(ECOpin, INPUT);
+  //CHECK IF COMPUTER IS CONNECTED
+  pinMode(3, OUTPUT);
   Serial.begin(9600);
+  if(Serial){
+    computerConnected = true;
+  }
+  else{
+    computerConnected = false;
+  }
+
+
   // We'll set up the LED pin to be an output.
   pinMode(lighLevelLedObserver, OUTPUT);
   //We don't need to do anything special to use the analog input for the input light sensor, we just read it
 
-  pinMode(buttonSmart, INPUT_PULLUP);//mode switcher M/A
-
+  pinMode(buttonSmartPin, INPUT_PULLUP);//mode switcher M/A
+  pinMode(shortButtonPin, INPUT_PULLUP);//button to manually control short lights
+  pinMode(longButtonPin, INPUT_PULLUP);//button to manually control long lights
+  
   pinMode(manualIndicatorPin, OUTPUT);
   pinMode(autoIndicatorPin, OUTPUT);
 
   pinMode(shortPin, OUTPUT);
   pinMode(longPin, OUTPUT);
-}
 
-
-void loop()
-{
-  //Execute only once, everytime system is turned on
-  if(!initialized){
-    initialized = true;
-    if(smart){
+  //Change this to initialize system to smart mode or manual mode
+  smart = true;
+  
+  if(smart){
       //manual indicator off
       digitalWrite(manualIndicatorPin, LOW);
       //auto indicator on
@@ -95,7 +115,13 @@ void loop()
       //manual indicator off
       digitalWrite(manualIndicatorPin, HIGH);
     }
-  }
+    
+}
+
+
+void loop()
+{
+  if(!computerConnected) digitalWrite(3, HIGH);
   //**********************TO-DO TURN ON POSITION LIGHTS ALWAYS ON!!!
   
   
@@ -150,17 +176,22 @@ void loop()
   // brightness of the LED:
 
   
-  /*-------------------------------AUTOMATIC-------------------------*/
+  /*-------------------------------SMART-------------------------*/
   while(smart){
+    //Start turning off long lights
+    digitalWrite(longPin, LOW);
+    
+    
     autoTune();// have the Arduino do the lightsensor autotune
     //measure the voltage coming from the photoresistor resistor pair
     //Range: [0-1023] (0 for 0 Volts and 1023 for 5V);
     lightLevel = analogRead(lightAnalogSensorPin);
-
     if(nightMode){
       digitalWrite(shortPin, HIGH);
+      shortIsOn = true;
     }else{
       digitalWrite(shortPin, LOW);
+      shortIsOn = false;
     }
     //Check  if we need to turn on short lights
     if(lightLevel < 500){//NIGHT
@@ -181,7 +212,7 @@ void loop()
     analogWrite(lighLevelLedObserver, 255-lightLevel);
     
     //check if state has been changed
-    if(digitalRead(buttonSmart) == LOW){//read the pushbutton value into a variable
+    if(digitalRead(buttonSmartPin) == LOW){//read the pushbutton value into a variable
       delay(300);
       smart = false;
       //auto indicator off
@@ -193,8 +224,7 @@ void loop()
   }
   /*-------------------------------MANUAL----------------------------*/
   while(!smart){
-    //keep short lights on
-    
+    /*
     String userOrder = "";
     if(Serial.available() != 0){
       userOrder = Serial.readString();//read command if any
@@ -228,40 +258,77 @@ void loop()
       else{
         Serial.println("NOT VALID COMMAND");
       }
+    }*/
+
+    int dist = calculateDistance();
+    if(dist < 10){
+      digitalWrite(longPin, LOW);
+      longIsOn = false; 
+    }
+  
+    //WHEN COMPUTER IS NOT CONNECTED WE EXCETUTE THIS CODE
+    if(digitalRead(longButtonPin) == LOW){
+      delay(200);
+      if(!longIsOn){
+        digitalWrite(longPin, HIGH);
+        longIsOn = true;
+      }else{ 
+        digitalWrite(longPin, LOW);
+        longIsOn = false;
+      }
+    }
+    if(digitalRead(shortButtonPin) == LOW){
+      delay(200);
+      if(shortIsOn){
+        digitalWrite(shortPin, LOW);
+        shortIsOn = false;
+      }else{ 
+        digitalWrite(shortPin, HIGH);
+        shortIsOn = true;
+      }
     }
 
-    
-
+    //THIS IS EXECUTED BOTH WHEN COMPUTER CONNECTED AND NOT CONNECTED
     //check if state has been changed to automatic
-    if(digitalRead(buttonSmart) == LOW){//read the pushbutton value into a variable
+    if(digitalRead(buttonSmartPin) == LOW){//read the pushbutton value into a variable
       delay(300);
       smart = true;
       //manual indicator off
       digitalWrite(manualIndicatorPin, LOW);
       //auto indicator on
       digitalWrite(autoIndicatorPin, HIGH);
-      Serial.println("AUTOMATIC MODE ON");
+      Serial.println("SMART MODE ON");
       break;
     }
-
-    
-    
-    
   }
-
-  
 }
 
 
-/************************************AUXILIAR FUNCTIONS***********************/
 
+
+
+
+
+
+
+
+
+/************************************AUXILIAR FUNCTIONS***********************/
+int calculateDistance(){
+    digitalWrite(TRIGpin, HIGH);
+    delay(1);
+    digitalWrite(TRIGpin, LOW);
+    LAPSE = pulseIn(ECOpin, HIGH);
+    DISTANCE = LAPSE/ 58.2;
+    return DISTANCE;
+}
 //FUNCTION TO MANUALLY TUNE THE LIGHT SENSOR
 void manualTune()
 {
   // As we mentioned above, the light-sensing circuit we built
   // won't have a range all the way from 0 to 1023. It will likely
-  // be more like 300 (dark) to 800 (light). If you run this sketch
-  // as-is, the LED won't fully turn off, even in the dark.
+  // be more like 300 (dark) to 800 (light). If we don't calibrate
+  // our system the LED won't fully turn off, even in the dark.
 
   // You can accommodate the reduced range by manually 
   // tweaking the "from" range numbers in the map() function.
@@ -321,3 +388,5 @@ void autoTune()
   // Now we'll return to the main loop(), and send lightLevel
   // to the LED.
 }
+
+/**************************CHRISTMAS MODE***************************/
