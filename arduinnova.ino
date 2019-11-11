@@ -139,7 +139,7 @@ void setup()
   pinMode(longPin, OUTPUT);
 
   //Change this to initialize system to smart mode or manual mode
-  smart = true;
+  smart = false;
 
   pinMode(speakerOut, OUTPUT);
   
@@ -437,9 +437,88 @@ void autoTune()
 
 /**************************CHRISTMAS MODE***************************/
  void playTone() {
+    //NOTES
+    /* #define  C     2100
+ #define  D     1870 
+ #define  E     1670
+ #define  f     1580    // Does not seem to like capital F
+ #define  G     1400 
+ // Define a special note, 'R', to represent a rest
+ #define  R     0*/
     for (int i=0; i<MAX_COUNT; i++) {
     tone_ = melody[i];
     beat = 50;
+    if(longIsOn){
+          if(melody[i] == E) {
+            digitalWrite(longPin, LOW);
+          }
+          if(melody[i] == D) {
+            digitalWrite(longPin, LOW);
+          }
+          if(melody[i] == f) {
+            digitalWrite(longPin, LOW);
+          }
+          if(melody[i] == G) {
+            digitalWrite(longPin, LOW);
+          }
+          if(melody[i] == R) {
+            digitalWrite(longPin, LOW);
+          }
+          longIsOn = false;
+    }else{
+       if(melody[i] == E) {
+            digitalWrite(longPin, HIGH);
+          }
+          if(melody[i] == D) {
+            digitalWrite(longPin, HIGH);
+          }
+          if(melody[i] == f) {
+            digitalWrite(longPin, HIGH);
+          }
+          if(melody[i] == G) {
+            digitalWrite(longPin, HIGH);
+          }
+          if(melody[i] == R) {
+            digitalWrite(longPin, HIGH);
+          }
+          longIsOn = true;
+    }
+
+    if(!shortIsOn){
+       if(melody[i] == R) {
+            digitalWrite(shortPin, HIGH);
+          }
+          if(melody[i] == G) {
+            digitalWrite(shortPin, HIGH);
+          }
+          if(melody[i] == f) {
+            digitalWrite(shortPin, HIGH);
+          }
+          if(melody[i] == D) {
+            digitalWrite(shortPin, HIGH);
+          }
+          if(melody[i] == E) {
+            digitalWrite(shortPin, HIGH);
+          }
+          shortIsOn = true;
+    }else{
+         if(melody[i] == R) {
+            digitalWrite(shortPin, LOW);
+          }
+          if(melody[i] == G) {
+            digitalWrite(shortPin, LOW);
+          }
+          if(melody[i] == f) {
+            digitalWrite(shortPin, LOW);
+          }
+          if(melody[i] == D) {
+            digitalWrite(shortPin, LOW);
+          }
+          if(melody[i] == E) {
+            digitalWrite(shortPin, LOW);
+          }
+          shortIsOn = false;
+    }
 
     duration = beat * tempo; // Set up timing
 
