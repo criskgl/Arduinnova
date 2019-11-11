@@ -44,7 +44,7 @@ One for manual and other for automatic.
       ground it & set its input voltage to pin6
 */
 //NAME USED PINS
-const int lightAnalogSensorPin = 0;
+const int lightAnalogSensorPin = 5;
 const int lighLevelLedObserver = 9;
 const int buttonSmartPin = 2;
 
@@ -56,6 +56,7 @@ const int shortButtonPin = 1;
 const int longPin = 11;
 const int longButtonPin = 0;
 
+const int speakerOut = 8; 
 //GLOBAL VARIABLES :
 int lightLevel, high = 0, low = 1023;//to handle light level
 bool smart = false;//to switch between MANUAL or AUTO
@@ -71,6 +72,42 @@ int TRIGpin = 12;
 int ECOpin = 13;
 int LAPSE;
 int DISTANCE;
+
+
+/*Variables for Christmas mode*/
+// TONES  ========================================== // Start by defining the relationship between
+//       note, period, &  frequency.
+ #define  C     2100
+ #define  D     1870 
+ #define  E     1670
+ #define  f     1580    // Does not seem to like capital F
+ #define  G     1400 
+ // Define a special note, 'R', to represent a rest
+ #define  R     0
+// MELODY and TIMING  =======================================
+ //  melody[] is an array of notes, accompanied by beats[],
+ //  which sets each note's relative length (higher #, longer note)
+ int melody[] = {E, E, E,R,
+ E, E, E,R,
+ E, G, C, D, E, R,
+ f, f, f,f, f, E, E,E, E, D ,D,E, D, R, G ,R,
+ E, E, E,R,
+ E, E, E,R,
+ E, G, C, D, E, R,
+ f, f, f,f, f, E, E, E,  G,G, f, D, C,R };
+ int MAX_COUNT = sizeof(melody) / 2; // Melody length, for looping.
+ // Set overall tempo
+ long tempo = 8000;           
+ // Set length of pause between notes
+ int pause = 1000;
+ // Loop variable to increase Rest length
+ int rest_count = 100; //<-BLETCHEROUS HACK; See NOTES
+ // Initialize core variables
+ int tone_ = 0;
+ int beat = 0;
+ long duration  = 0;
+
+
 
 void setup()
 {
@@ -103,6 +140,8 @@ void setup()
 
   //Change this to initialize system to smart mode or manual mode
   smart = true;
+
+  pinMode(speakerOut, OUTPUT);
   
   if(smart){
       //manual indicator off
@@ -224,7 +263,7 @@ void loop()
   }
   /*-------------------------------MANUAL----------------------------*/
   while(!smart){
-    /*
+    
     String userOrder = "";
     if(Serial.available() != 0){
       userOrder = Serial.readString();//read command if any
@@ -255,20 +294,25 @@ void loop()
         delay(200);
         digitalWrite(longPin, HIGH);
       }
+      else if(userOrder.compareTo("CHRISTMAS") == 10){
+        Serial.println("HO HO HO!!");
+        playTone();
+        Serial.println("HO HO HO ENDED!");
+      }
       else{
         Serial.println("NOT VALID COMMAND");
       }
-    }*/
-
+    }
+    
     int dist = calculateDistance();
     if(dist < 10){
       digitalWrite(longPin, LOW);
       longIsOn = false; 
     }
-  
+    /*
     //WHEN COMPUTER IS NOT CONNECTED WE EXCETUTE THIS CODE
     if(digitalRead(longButtonPin) == LOW){
-      delay(200);
+     
       if(!longIsOn){
         digitalWrite(longPin, HIGH);
         longIsOn = true;
@@ -278,7 +322,6 @@ void loop()
       }
     }
     if(digitalRead(shortButtonPin) == LOW){
-      delay(200);
       if(shortIsOn){
         digitalWrite(shortPin, LOW);
         shortIsOn = false;
@@ -286,7 +329,8 @@ void loop()
         digitalWrite(shortPin, HIGH);
         shortIsOn = true;
       }
-    }
+    }*/
+    
 
     //THIS IS EXECUTED BOTH WHEN COMPUTER CONNECTED AND NOT CONNECTED
     //check if state has been changed to automatic
@@ -300,6 +344,8 @@ void loop()
       Serial.println("SMART MODE ON");
       break;
     }
+          delay(300);
+
   }
 }
 
@@ -390,3 +436,33 @@ void autoTune()
 }
 
 /**************************CHRISTMAS MODE***************************/
+ void playTone() {
+    for (int i=0; i<MAX_COUNT; i++) {
+    tone_ = melody[i];
+    beat = 50;
+
+    duration = beat * tempo; // Set up timing
+
+    long elapsed_time = 0;
+   if (tone_ > 0) { // if this isn't a Rest beat, while the tone has
+     //  played less long than 'duration', pulse speaker HIGH and LOW
+     while (elapsed_time < duration) {
+       digitalWrite(speakerOut,HIGH);
+       delayMicroseconds(tone_ / 2);
+       // DOWN
+       digitalWrite(speakerOut, LOW);
+       delayMicroseconds(tone_ / 2);
+       // Keep track of how long we pulsed
+       elapsed_time += (tone_);
+     }
+   }
+   else { // Rest beat; loop times delay
+     for (int j = 0; j < rest_count; j++) { // See NOTE on rest_count
+       delayMicroseconds(duration); 
+     } 
+   }      
+    // A pause between notes...
+    delayMicroseconds(pause);
+  }
+                             
+ }
