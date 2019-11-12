@@ -99,9 +99,9 @@ int DISTANCE;
  // Set overall tempo
  long tempo = 8000;           
  // Set length of pause between notes
- int pause = 1000;
+ int pause = 500;
  // Loop variable to increase Rest length
- int rest_count = 100; //<-BLETCHEROUS HACK; See NOTES
+ int rest_count = 50; //<-BLETCHEROUS HACK; See NOTES
  // Initialize core variables
  int tone_ = 0;
  int beat = 0;
