@@ -39,10 +39,10 @@ void mousePressed()//When mouse pressend
 void keyPressed()//When key pressed
 {
    switch(key) {
-  case '1':
+  case '1': //Change to monitorization tab
     tab = 1;
     break;
-  case '2':
+  case '2': //Change to history tab
     tab = 2;
     break;
   default:
@@ -102,6 +102,8 @@ void showMonitorizationAuto(){
 
 //Func Descriptions: draws the monitorization for light detection --shows only in auto mode
 void drawLightSensorDetection(){
+  PImage lightDetectionSymbol =loadImage("lightDetectionSymbol.png");
+  image(lightDetectionSymbol,340,230,35,35);
   fill(0,0,0);
   rect(340, 270, 35, 255);
   int rangeDistance = 255;
@@ -112,6 +114,8 @@ void drawLightSensorDetection(){
 
 //Func Descriptions: draws the monitorization for distance detection --shows in both modes
 void drawDistanceSensorDetection(){
+  PImage lightDetectionSymbol =loadImage("distanceDetectionSymbol.png");
+  image(lightDetectionSymbol,400,230,35,35);
   fill(0,0,0);
   rect(400, 270, 35, 255);
 }
