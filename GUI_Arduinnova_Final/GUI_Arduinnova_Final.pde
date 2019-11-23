@@ -15,7 +15,7 @@ void draw()
   background(255,255,255);//Fondo de color blanco
   //DRAW LOGO
   PImage logo=loadImage("logo.png");
-  image(logo,0,0,200,100);
+  image(logo,30,20,200,100);
   
   switch(tab){
     case 1:
