@@ -4,6 +4,8 @@ Serial port; //Serial port name
 int tab = 1;//Keeps track of current tab | [1]-->[monitorization] | [2]-->[Logs] 
 int mode = 1;//Keeps current mode | [1]-->[manual] | [2]-->[Auto] 
 int lightValue = 200;//Keep track of light value
+boolean cortas = false;
+boolean largas = false;
 void setup()
 {
   //println(Serial.list()); //Visualiza los puertos serie disponibles en la consola de abajo
@@ -36,7 +38,7 @@ void mousePressed()//When mouse pressend
   
 }
  
-void keyPressed()//When key pressed
+void keyPressed()//When key pressed--handle states
 {
    switch(key) {
   case '1': //Change to monitorization tab
@@ -50,6 +52,20 @@ void keyPressed()//When key pressed
     break;
   case 'a': //Change to auto mode
     mode = 2;
+    break;
+  case 'c': //ON-OFF Cortas
+    if(mode == 1){//if in manual mode
+      cortas = !cortas;
+    }
+    break;
+  case 'l': //ON-OFF Largas
+    largas = !largas;
+    break;
+  case 'r': //Rafaga
+  /*HANDLE RAFAGAS*/
+    break;
+  case 'x': //Xmas mode
+  /*HANDLE XMAS MODE*/
     break;
   default:
     break;
@@ -78,20 +94,37 @@ void showMonitorization(){
 
 //Draws the visualization of active lights
 void drawLightPanel(){
-  fill(200,200,200);
+  //rgb(255,165,0)--> orange
+  //Posición Indicator -- ALWAYS ON
+  fill(255,165,0);
   strokeWeight(1);
-  //Posición Indicator
-  PImage lucesPosicionSymbol =loadImage("lucesCortas.png");
+  PImage lucesPosicionSymbol =loadImage("lucesPosicion.png");
   rect(300, 127, 120, 50);
-  image(lucesPosicionSymbol,320,127,50,50);
+  image(lucesPosicionSymbol,340,127,50,50);
+
   //Cortas Indicator
+  if(cortas){
+    fill(255,165,0);
+    strokeWeight(1);
+  }else{
+    fill(200,200,200);
+    strokeWeight(0);
+  }
   PImage lucesCortasSymbol =loadImage("lucesCortas.png");
   rect(465, 127, 120, 50);
-  image(lucesCortasSymbol,485,127,50,50);
+  image(lucesCortasSymbol,505,127,50,50);
+ 
   //Largas Indicator
+  if(largas){
+    fill(255,165,0);
+    strokeWeight(1);
+  }else{
+    fill(200,200,200);
+    strokeWeight(0);
+  }
   PImage lucesLargasSymbol =loadImage("lucesLargas.png");
   rect(630, 127, 120, 50);
-  image(lucesLargasSymbol,650,127,50,50);
+  image(lucesLargasSymbol,670,127,50,50);
 }
 
 //Function Description: Draws the menu highlighting the selected Monitorization tab
@@ -126,10 +159,26 @@ void drawManualLightControl(){
   fill(30,42,100);
   strokeWeight(1);
   rect(50, 200, 200, 50);
+  textSize(22);
+  fill(255, 255, 255);
+  text("C: Cortas", 100, 235);
+  
+  fill(30,42,100);
+  strokeWeight(1);
   rect(50, 290, 200, 50);
+  fill(255, 255, 255);
+  text("L: Largas", 100, 325);
+  
+  fill(30,42,100);
+  strokeWeight(1);
   rect(50, 380, 200, 50);
+  fill(255, 255, 255);
+  text("R: Ráfaga", 100, 415);
+  
   fill(255,0,0);
   rect(50, 470, 200, 50);
+  fill(255, 255, 255);
+  text("X: CHRISTMAS", 80, 505);
 }
 //Func Description: draws and manages the manual mode
 void showMonitorizationAuto(){
@@ -150,10 +199,18 @@ void drawManualAutoIndicatorAutoSelected(){
 
 //Func Description: draws the light control available in auto mode
 void drawAutoLightControl(){
+  textSize(22);
   fill(30,42,100);
   strokeWeight(1);
   rect(50, 290, 200, 50);
+  fill(255, 255, 255);
+  text("L: Largas", 100, 325);
+  
+  fill(30,42,100);
+  strokeWeight(1);
   rect(50, 380, 200, 50);
+  fill(255, 255, 255);
+  text("R: Ráfaga", 100, 415);
 }
 
 //Func Descriptions: draws the monitorization for light detection --shows only in auto mode
