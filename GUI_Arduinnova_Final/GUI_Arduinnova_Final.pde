@@ -4,6 +4,10 @@ Serial port; //Serial port name
 int tab = 1;//Keeps track of current tab | [1]-->[monitorization] | [2]-->[Logs] 
 int mode = 1;//Keeps current mode | [1]-->[manual] | [2]-->[Auto] 
 int lightValue = 200;//Keep track of light value
+int umbralDay = 800;//Keep track of umbral value for day mode
+int umbralNight = 300;//Keep track of umbral value for night mode
+int stepUmbralChange = 10;
+int distanceValue = 40;//Keep track of distance value
 boolean cortas = false;
 boolean largas = false;
 void setup()
@@ -15,6 +19,7 @@ void setup()
  
 void draw()
 {
+  lightValue = height-mouseY;//DELETE THIS DELETE THIS DELETE THIS DELETE THIS WHEN FINISHED!!!!
   background(255,255,255);//Fondo de color blanco
   //DRAW LOGO
   PImage logo=loadImage("logo.png");
@@ -67,6 +72,22 @@ void keyPressed()//When key pressed--handle states
   case 'x': //Xmas mode
   /*HANDLE XMAS MODE*/
     break;
+  case 'd': //day umbral up
+    if(umbralDay + stepUmbralChange > 1023) break;
+    umbralDay+=stepUmbralChange;
+    break;
+  case 's': //day umbral down
+    if(umbralDay - stepUmbralChange < umbralNight) break;
+    umbralDay-=stepUmbralChange;
+    break;
+  case 'n': //night umbral up
+    if(umbralNight + stepUmbralChange > umbralDay) break;
+    umbralNight+=stepUmbralChange;
+    break;
+  case 'b': //night umbral down
+  if(umbralNight - stepUmbralChange < 0) break;
+    umbralNight-=stepUmbralChange;
+    break;
   default:
     break;
   }
@@ -100,7 +121,7 @@ void drawLightPanel(){
   strokeWeight(1);
   PImage lucesPosicionSymbol =loadImage("lucesPosicion.png");
   rect(300, 127, 120, 50);
-  image(lucesPosicionSymbol,340,127,50,50);
+  image(lucesPosicionSymbol,335,127,50,50);
 
   //Cortas Indicator
   if(cortas){
@@ -223,6 +244,15 @@ void drawLightSensorDetection(){
   int lightLength = (lightValue*(rangeDistance))/1023;
   fill(255,255,0);
   rect(340, 270+(rangeDistance-lightLength), 35, lightLength);
+  
+  int umbralDayLength = (umbralDay*(rangeDistance))/1023;
+  stroke(0, 234, 255);
+  strokeWeight(4);
+  line(340, 270+(rangeDistance-umbralDayLength), 375, 270+(rangeDistance-umbralDayLength));
+  int umbralNightLength = (umbralNight*(rangeDistance))/1023;
+  stroke(0, 55, 255);
+  strokeWeight(4);
+  line(340, 270+(rangeDistance-umbralNightLength), 375, 270+(rangeDistance-umbralNightLength));
 }
 
 //Func Descriptions: draws the monitorization for distance detection --shows in both modes
