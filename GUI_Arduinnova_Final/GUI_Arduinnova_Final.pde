@@ -45,6 +45,12 @@ void keyPressed()//When key pressed
   case '2': //Change to history tab
     tab = 2;
     break;
+  case 'm': //Change to manual mode
+    mode = 1;
+    break;
+  case 'a': //Change to auto mode
+    mode = 2;
+    break;
   default:
     break;
   }
@@ -55,17 +61,37 @@ void keyPressed()//When key pressed
 void showMonitorization(){
   //Draw menu with monitorization selected
   drawMenuMonitorizationSelected();
+  //Draw active lights panel
+  drawLightPanel();
   //manage each mode depending on 
   switch(mode){
     case 1://manual
     showMonitorizationManual();
     break;
-  case 2:
+  case 2://automatic
     showMonitorizationAuto();
     break;
   default:
     break;
   }
+}
+
+//Draws the visualization of active lights
+void drawLightPanel(){
+  fill(200,200,200);
+  strokeWeight(1);
+  //Posición Indicator
+  PImage lucesPosicionSymbol =loadImage("lucesCortas.png");
+  rect(300, 127, 120, 50);
+  image(lucesPosicionSymbol,320,127,50,50);
+  //Cortas Indicator
+  PImage lucesCortasSymbol =loadImage("lucesCortas.png");
+  rect(465, 127, 120, 50);
+  image(lucesCortasSymbol,485,127,50,50);
+  //Largas Indicator
+  PImage lucesLargasSymbol =loadImage("lucesLargas.png");
+  rect(630, 127, 120, 50);
+  image(lucesLargasSymbol,650,127,50,50);
 }
 
 //Function Description: Draws the menu highlighting the selected Monitorization tab
@@ -81,10 +107,20 @@ void drawMenuMonitorizationSelected(){
 }
 //Func Description: draws and manages the manual mode
 void showMonitorizationManual(){
+  drawManualAutoIndicatorManualSelected();
   drawManualLightControl();
   drawDistanceSensorDetection();
-  drawLightSensorDetection();
 }
+
+//Func Description: draws the indication of mode with manual mode selected
+void drawManualAutoIndicatorManualSelected(){
+  textSize(19);
+  fill(0, 102, 153);
+  text("M: Manual", 55, 140);
+  fill(170,170,170);
+  text("A: Auto", 180, 140);
+}
+
 //Func Description: draws the controls to handle lights
 void drawManualLightControl(){
   fill(30,42,100);
@@ -97,7 +133,27 @@ void drawManualLightControl(){
 }
 //Func Description: draws and manages the manual mode
 void showMonitorizationAuto(){
+  drawManualAutoIndicatorAutoSelected();
+  drawAutoLightControl();
+  drawDistanceSensorDetection();
+  drawLightSensorDetection();
+}
 
+//Func Description: draws the indication of mode with auto mode selected
+void drawManualAutoIndicatorAutoSelected(){
+  textSize(19);
+  fill(170, 170, 170);
+  text("M: Manual", 55, 140);
+  fill(0,102,153);
+  text("A: Auto", 180, 140);
+}
+
+//Func Description: draws the light control available in auto mode
+void drawAutoLightControl(){
+  fill(30,42,100);
+  strokeWeight(1);
+  rect(50, 290, 200, 50);
+  rect(50, 380, 200, 50);
 }
 
 //Func Descriptions: draws the monitorization for light detection --shows only in auto mode
