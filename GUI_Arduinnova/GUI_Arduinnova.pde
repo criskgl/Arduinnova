@@ -1,4 +1,4 @@
-import processing.serial.*; //Importamos la librería Serial
+ import processing.serial.*; //Importamos la librería Serial
  
 Serial port; //Nombre del puerto serie
  
