@@ -58,20 +58,24 @@ void keyPressed()//When key pressed--handle states
     tab = 2;
     break;
   case 'm': //Change to manual mode
-    writeLog(logFile, "MODO MANUAL");
+    if(mode == 2)  writeLog(logFile, "MODO MANUAL");
     mode = 1;
     break;
   case 'a': //Change to auto mode
-    writeLog(logFile, "MODO AUTOMATICO");
+   if(mode == 1)  writeLog(logFile, "MODO AUTOMATICO");
     mode = 2;
     break;
   case 'c': //ON-OFF Cortas
     if(mode == 1){//if in manual mode
+      if(cortas) writeLog(logFile, "CORTAS OFF");
+      if(!cortas) writeLog(logFile, "CORTAS ON");
       cortas = !cortas;
     }
     break;
   case 'l': //ON-OFF Largas
-    largas = !largas;
+    if(largas) writeLog(logFile, "LARGAS OFF");
+    if(!largas) writeLog(logFile, "LARGAS ON");
+    largas = !largas; 
     break;
   case 'r': //Rafaga
   /*HANDLE RAFAGAS*/
@@ -352,24 +356,24 @@ void drawLogs(){
   fill(0,0,0);
   stroke(20,150,0);
   strokeWeight(3);
-  rect(53,200,707,326);
+  rect(260,150,420,405);
   //get the last lines
   ArrayList<String> lines = parseFile("logFile.txt");
-  int logLimit = 18;
-  textSize(8);
+  int logLimit = 30;
+  textSize(12);
   fill(20,150,0);
-  int yLogPosition = 225;
-  int xLogPosition = 100;
+  int yLogPosition = 170;
+  int xLogPosition = 270;
   for(int i = lines.size()-1, logCount = 0; i >= 0 && logCount < logLimit; i--){
      text(lines.get(i), xLogPosition, yLogPosition);
-     yLogPosition+=12;
+     yLogPosition+=13;
      logCount++;
   }
 }
 
 //Function Description: write a message to a file
 void writeLog(PrintWriter file, String message){
-   file.print("["+day()+"/"+month()+"/"+year()+"|"+hour( )+":"+minute( )+":"+second( )+"] ---> "+message+"\n");
+   file.print("["+day()+"/"+month()+"/"+year()+"|"+hour( )+":"+minute( )+":"+second( )+"]    ---    "+message+"\n");
    file.flush();
 }
 
