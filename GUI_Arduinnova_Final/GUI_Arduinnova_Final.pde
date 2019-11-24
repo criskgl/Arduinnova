@@ -12,17 +12,20 @@ boolean cortas = false;//keep track of on-off state of cortas
 boolean largas = false;//keep track of on-off state of largas
 int xLightDetections = 515;//keeps track of xValue for lightDetectionGraph
 ArrayList<PVector> lightDetections = new ArrayList();//saves up to 50 values of lightDetectionGraph
+
+PrintWriter logFile;//Create file where we will save the logs
 void setup()
 {
   //println(Serial.list()); //Visualiza los puertos serie disponibles en la consola de abajo
   //port = new Serial(this, Serial.list()[2], 9600); //Abre el puerto serie COM3
+  logFile = createWriter("logFile.txt"); //Create file to save the logs 
   size(800, 600); //Creamos una ventana de 800 píxeles de anchura por 600 píxeles de altura 
 }
  
 void draw()
 {
   lightValue = height-mouseY;//DELETE THIS DELETE THIS DELETE THIS DELETE THIS WHEN FINISHED!!!!
-  background(255,255,255);//Fondo de color blanco
+  background(255,255,255);//white background
   //DRAW LOGO
   PImage logo=loadImage("logo.png");
   image(logo,30,20,200,100);
@@ -55,9 +58,11 @@ void keyPressed()//When key pressed--handle states
     tab = 2;
     break;
   case 'm': //Change to manual mode
+    writeLog(logFile, "MODO MANUAL");
     mode = 1;
     break;
   case 'a': //Change to auto mode
+    writeLog(logFile, "MODO AUTOMATICO");
     mode = 2;
     break;
   case 'c': //ON-OFF Cortas
@@ -324,6 +329,7 @@ void drawDistanceDetectionGraph(int xCoordinate, int yCoordinate, int xLength, i
 //Func Description: draws the hisory logs
 void showLogs(){
   drawMenuLogsSelected();
+  drawLogs();
 }
 
 //Function Description: Draws the menu highlighting the selected Monitorization tab
@@ -338,4 +344,47 @@ void drawMenuLogsSelected(){
   line(260, 100, 500, 100);
   strokeWeight(5);
   line(500, 100, 675, 100);
+}
+
+//Func Description: draws the last logs
+void drawLogs(){
+  //build the black rectangle for logs
+  fill(0,0,0);
+  stroke(20,150,0);
+  strokeWeight(3);
+  rect(53,200,707,326);
+  //get the last lines
+  ArrayList<String> lines = parseFile("logFile.txt");
+  int logLimit = 18;
+  textSize(8);
+  fill(20,150,0);
+  int yLogPosition = 225;
+  int xLogPosition = 100;
+  for(int i = lines.size()-1, logCount = 0; i >= 0 && logCount < logLimit; i--){
+     text(lines.get(i), xLogPosition, yLogPosition);
+     yLogPosition+=12;
+     logCount++;
+  }
+}
+
+//Function Description: write a message to a file
+void writeLog(PrintWriter file, String message){
+   file.print("["+day()+"/"+month()+"/"+year()+"|"+hour( )+":"+minute( )+":"+second( )+"] ---> "+message+"\n");
+   file.flush();
+}
+
+//Function Description: reads a each line giving back a list of strings
+ArrayList<String> parseFile(String fileName){
+  BufferedReader reader = createReader(fileName);//Open the file
+  String line = null;
+  ArrayList<String> result = new ArrayList<String>();
+  try {
+    while ((line = reader.readLine()) != null) {
+      result.add(line);
+    }
+    reader.close();
+  } catch (IOException e) {
+    e.printStackTrace();
+  }
+  return result;
 }
