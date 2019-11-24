@@ -258,11 +258,11 @@ void drawLightSensorDetection(){
   
   int umbralDayLength = (umbralDay*(rangeDistance))/1023;
   stroke(0, 234, 255);
-  strokeWeight(4);
+  strokeWeight(2);
   line(340, 270+(rangeDistance-umbralDayLength), 375, 270+(rangeDistance-umbralDayLength));
   int umbralNightLength = (umbralNight*(rangeDistance))/1023;
-  stroke(0, 55, 255);
-  strokeWeight(4);
+  stroke(170, 170, 170);
+  strokeWeight(2);
   line(340, 270+(rangeDistance-umbralNightLength), 375, 270+(rangeDistance-umbralNightLength));
 }
 
@@ -292,9 +292,10 @@ void drawLightDetectionGraph(int xLength){
   text("t(s)", 740, 375);
   //draw umbral lines
   stroke(0, 234, 255);
+  strokeWeight(1);
   int umbralDayAdjusted = (((1023-umbralDay)*(360-230))/1023)+230;
   line(515, umbralDayAdjusted, 515+240, umbralDayAdjusted);
-  stroke(0, 55, 255);
+  stroke(170, 170, 170);
   int umbralNightAdjusted = (((1023-umbralNight)*(360-230))/1023)+230;
   line(515, umbralNightAdjusted, 515+240, umbralNightAdjusted);
   
