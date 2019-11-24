@@ -157,7 +157,9 @@ void drawMenuMonitorizationSelected(){
   text("2: Historial", 520, 84);
   stroke(30,42,100);
   strokeWeight(5);
-  line(260, 100, 750, 100);
+  line(260, 100, 500, 100);
+  strokeWeight(2);
+  line(500, 100, 675, 100);
 }
 //Func Description: draws and manages the manual mode
 void showMonitorizationManual(){
@@ -286,6 +288,8 @@ void drawMenuLogsSelected(){
   fill(0, 102, 153);
   text("2: Historial", 520, 84);
   stroke(30,42,100);
+  strokeWeight(2);
+  line(260, 100, 500, 100);
   strokeWeight(5);
-  line(260, 100, 750, 100);
+  line(500, 100, 675, 100);
 }
