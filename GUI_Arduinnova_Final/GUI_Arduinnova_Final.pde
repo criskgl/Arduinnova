@@ -8,8 +8,10 @@ int umbralDay = 800;//Keep track of umbral value for day mode
 int umbralNight = 300;//Keep track of umbral value for night mode
 int stepUmbralChange = 10;
 int distanceValue = 40;//Keep track of distance value
-boolean cortas = false;
-boolean largas = false;
+boolean cortas = false;//keep track of on-off state of cortas
+boolean largas = false;//keep track of on-off state of largas
+int xLightDetections = 515;//keeps track of xValue for lightDetectionGraph
+ArrayList<PVector> lightDetections = new ArrayList();//saves up to 50 values of lightDetectionGraph
 void setup()
 {
   //println(Serial.list()); //Visualiza los puertos serie disponibles en la consola de abajo
@@ -214,6 +216,8 @@ void showMonitorizationAuto(){
   drawAutoLightControl();
   drawDistanceSensorDetection();
   drawLightSensorDetection();
+  drawLightDetectionGraph(240);
+  drawDistanceDetectionGraph(0,0,100,100);
 }
 
 //Func Description: draws the indication of mode with auto mode selected
@@ -270,10 +274,51 @@ void drawDistanceSensorDetection(){
   rect(400, 270, 35, 255);
 }
 
+void drawLightDetectionGraph(int xLength){
+  //draw black screen background
+  fill(0,0,0);
+  stroke(0);
+  rect(515,230,240,130);
+  //draw char text
+  textSize(9);
+  fill(255,255,255);
+  text("1023", 517, 240);
+  fill(255,255,255);
+  text("0", 517, 360);
+  textSize(10);
+  fill(0,0,0);
+  text("Luz", 490, 240);
+  fill(0,0,0);
+  text("t(s)", 740, 375);
+  //draw umbral lines
+  stroke(0, 234, 255);
+  int umbralDayAdjusted = (((1023-umbralDay)*(360-230))/1023)+230;
+  line(515, umbralDayAdjusted, 515+240, umbralDayAdjusted);
+  stroke(0, 55, 255);
+  int umbralNightAdjusted = (((1023-umbralNight)*(360-230))/1023)+230;
+  line(515, umbralNightAdjusted, 515+240, umbralNightAdjusted);
+  
+  if(xLightDetections > 515+xLength){//take care of overflowing our screen black area
+    xLightDetections = 515;
+  }
+  xLightDetections++;//step in x for next value
+  int lightValueAdjusted = (((1023-lightValue)*(360-230))/1023)+230;
+  lightDetections.add(new PVector(xLightDetections,lightValueAdjusted));//add value to array
+  if( lightDetections.size() > 50 ) lightDetections.remove(0);//remove oldest value
+  for( int i = 0; i<lightDetections.size()-1; i++){
+    stroke(100,255,100,map(i,0,lightDetections.size()-1,0,255));
+    strokeWeight(1);
+    if( lightDetections.get(i).x < lightDetections.get(i+1).x) 
+    line(lightDetections.get(i).x,lightDetections.get(i).y, lightDetections.get(i+1).x,lightDetections.get(i+1).y);
+  }
+}
 
-
-
-
+void drawDistanceDetectionGraph(int xCoordinate, int yCoordinate, int xLength, int yLength){
+  //draw black screen background
+  fill(0,0,0);
+  stroke(0);
+  rect(515,395,240,130);
+}
 //-------------LOG TAB HANDLING FROM HERE DOWN-------------
 //Func Description: draws the hisory logs
 void showLogs(){
