@@ -204,6 +204,11 @@ void drawManualLightControl(){
 //Func Description: draws and manages the manual mode
 void showMonitorizationAuto(){
   drawManualAutoIndicatorAutoSelected();
+  if(lightValue < umbralNight || lightValue > umbralDay){
+      if(lightValue < umbralNight) cortas = true;
+      else cortas = false;
+  }
+
   drawAutoLightControl();
   drawDistanceSensorDetection();
   drawLightSensorDetection();
