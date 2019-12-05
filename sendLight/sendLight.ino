@@ -1,7 +1,11 @@
+/*For light sensor*/
 const int lightAnalogSensorPin = 5;
 /*For movement sensor*/
 int TRIGpin = 12;
 int ECOpin = 13;
+int LAPSE;
+int DISTANCE;
+
 int rafagaDelay = 200;
 
 const int shortPin = 10;
@@ -94,13 +98,23 @@ void loop() {
   }
 
   
-  // put your main code here, to run repeatedly:
+  //SEND LIGHT LEVEL 3 BYTES [OPCODE=0][BYTE][BYTE]
   int lightLevel = analogRead(lightAnalogSensorPin);//occupies 2 bytes
-  int firstByte = highByte(lightLevel);
-  int secondByte = lowByte(lightLevel);
+  int firstByte = 0;
+  int secondByte = highByte(lightLevel);
+  int thirdByte = lowByte(lightLevel);
   Serial.write(firstByte);
   Serial.write(secondByte);  
-  delay(1000);
+  Serial.write(thirdByte);  
+  //SEND DISTANCE LEVEL 3 BYTES [OPCODE=1][BYTE][BYTE]
+  int d = calculateDistance();
+  firstByte = 1;
+  secondByte = highByte(d);
+  thirdByte = lowByte(d);
+  Serial.write(firstByte);
+  Serial.write(secondByte);  
+  Serial.write(thirdByte);  
+  delay(500);
 }
 
 void doRafaga(){
@@ -235,4 +249,13 @@ void playTone() {
     delayMicroseconds(pause);
   }
   xMasIsPlaying = false;
+}
+
+int calculateDistance(){
+    digitalWrite(TRIGpin, HIGH);
+    delay(1);
+    digitalWrite(TRIGpin, LOW);
+    LAPSE = pulseIn(ECOpin, HIGH);
+    DISTANCE = LAPSE/ 58.2;
+    return DISTANCE;
 }
