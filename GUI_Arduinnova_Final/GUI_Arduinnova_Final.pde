@@ -6,12 +6,18 @@ int mode = 1;//Keeps current mode | [1]-->[manual] | [2]-->[Auto]
 int lightValue = 200;//Keep track of light value
 int umbralDay = 800;//Keep track of umbral value for day mode
 int umbralNight = 300;//Keep track of umbral value for night mode
+boolean isUnderUmbralNight = false;
+boolean isOverUmbralDay = false;
+
 int stepUmbralChange = 10;
 int distanceValue = 40;//Keep track of distance value
 boolean cortas = false;//keep track of on-off state of cortas
 boolean largas = false;//keep track of on-off state of largas
 int xLightDetections = 515;//keeps track of xValue for lightDetectionGraph
 ArrayList<PVector> lightDetections = new ArrayList();//saves up to 50 values of lightDetectionGraph
+
+/*Xmas variables*/
+boolean isXmas = false;
 
 PrintWriter logFile;//Create file where we will save the logs
 void setup()
@@ -95,6 +101,8 @@ void keyPressed()//When key pressed--handle states
     break;
   case 'x': //Xmas mode
   /*HANDLE XMAS MODE*/
+    isXmas = !isXmas;
+    port.write('x');
     break;
   case 'd': //day umbral up
     if(umbralDay + stepUmbralChange > 1023) break;
@@ -190,6 +198,10 @@ void showMonitorizationManual(){
   drawManualAutoIndicatorManualSelected();
   drawManualLightControl();
   drawDistanceSensorDetection();
+  if(isXmas){
+      PImage xMasFrame=loadImage("christmas-frame-1.png");
+      image(xMasFrame,0,0,800,600);
+  }
 }
 
 //Func Description: draws the indication of mode with manual mode selected
@@ -230,9 +242,21 @@ void drawManualLightControl(){
 //Func Description: draws and manages the manual mode
 void showMonitorizationAuto(){
   drawManualAutoIndicatorAutoSelected();
-  if(lightValue < umbralNight || lightValue > umbralDay){
-      if(lightValue < umbralNight) cortas = true;
-      else cortas = false;
+  if(lightValue < umbralNight || lightValue > umbralDay){//exceeding either umbralDay or umbralNight
+      if(lightValue < umbralNight) {
+        if(!isUnderUmbralNight){
+          cortas = true;//entering umbralNight
+          writeLog(logFile, "CORTAS ON");
+          port.write('c');
+          isUnderUmbralNight = true;
+        }
+      }
+      else{//entering umbralDay
+        writeLog(logFile, "CORTAS OFF");
+        port.write('c');
+        cortas = false; 
+      }
+      
   }
 
   drawAutoLightControl();
