@@ -17,30 +17,20 @@ PrintWriter logFile;//Create file where we will save the logs
 void setup()
 {
   //println(Serial.list()); //Visualiza los puertos serie disponibles en la consola de abajo
-  port = new Serial(this, Serial.list()[2], 9600); //Abre el puerto serie COM3
+  //port = new Serial(this, Serial.list()[2], 9600); //Abre el puerto serie COM3
   logFile = createWriter("logFile.txt"); //Create file to save the logs 
   size(800, 600); //Creamos una ventana de 800 píxeles de anchura por 600 píxeles de altura 
 }
  
 void draw()
 {
-  /*Read if there is any value in Serial*/
-
-  //lightValue = height-mouseY;//DELETE THIS DELETE THIS DELETE THIS DELETE THIS WHEN FINISHED!!!! sssssssssss
-  while(port.available() > 0){
-    int byte1 = port.read();
-    int byte2 = port.read();
-    lightValue = byte1 << 8 | byte2;
-  }
-
-  
-  
+  lightValue = height-mouseY;//DELETE THIS DELETE THIS DELETE THIS DELETE THIS WHEN FINISHED!!!!
   background(255,255,255);//white background
   //DRAW LOGO
   PImage logo=loadImage("logo.png");
   image(logo,30,20,200,100);
   
-  //show tab selected between monitorization and logs
+  //show tab selected
   switch(tab){
     case 1:
     showMonitorization();
@@ -80,18 +70,15 @@ void keyPressed()//When key pressed--handle states
       if(cortas) writeLog(logFile, "CORTAS OFF");
       if(!cortas) writeLog(logFile, "CORTAS ON");
       cortas = !cortas;
-      port.write('c');//send order to arduino
     }
     break;
   case 'l': //ON-OFF Largas
     if(largas) writeLog(logFile, "LARGAS OFF");
     if(!largas) writeLog(logFile, "LARGAS ON");
     largas = !largas; 
-    port.write('l');//send order to arduino
     break;
   case 'r': //Rafaga
   /*HANDLE RAFAGAS*/
-  port.write('r');
     break;
   case 'x': //Xmas mode
   /*HANDLE XMAS MODE*/

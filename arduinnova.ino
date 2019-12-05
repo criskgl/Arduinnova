@@ -165,13 +165,14 @@ void loop()
   /*-------------------------------MANUAL----------------------------*/
   while(!smart){
 
+    /*
     if(Serial.available() > 4){
       Serial.print("hola");
       String userOrder = Serial.readString();
       manageUserInput(userOrder);
-    }
+    }*/
     checkUpdateLightButtons();
-    //offLongIfDistanceTooSmall();
+    offLongIfDistanceTooSmall();
     //check if state has been changed to automatic
     if(digitalRead(buttonSmartPin) == LOW){//read the pushbutton value into a variable
       delay(300);
@@ -193,7 +194,9 @@ void serialFlush(){
 }   
 
 void offLongIfDistanceTooSmall(){
+    
     int dist = calculateDistance();
+    Serial.println("distance detected: "+dist);
     if(dist < 10){
       digitalWrite(longPin, LOW);
       longIsOn = false; 
