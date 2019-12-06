@@ -114,7 +114,7 @@ void loop() {
   Serial.write(firstByte);
   Serial.write(secondByte);  
   Serial.write(thirdByte);  
-  delay(2000);
+  delay(1000);
 }
 
 void doRafaga(){

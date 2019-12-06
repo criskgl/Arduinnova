@@ -30,7 +30,7 @@ ArrayList<PVector> lightDetections = new ArrayList();//saves up to 50 values of 
 int xDistanceDetections = 515;//keeps track of xValue for distanceDetectionGraph
 ArrayList<PVector> distanceDetections = new ArrayList();//saves up to 50 values of distanceDetectionGraph
 
-
+int secondsSinceStart;
 /*Xmas variables*/
 boolean isXmas = false;
 
@@ -46,8 +46,6 @@ void setup()
 void draw()
 {
   /*Read if there is any value in Serial*/
-
-  //lightValue = height-mouseY;//DELETE THIS DELETE THIS DELETE THIS DELETE THIS WHEN FINISHED!!!! sssssssssss
   while(port.available() > 0){
     int opCode = port.read();
     int byte1 = port.read();
@@ -234,7 +232,19 @@ void showMonitorizationManual(){
   drawManualAutoIndicatorManualSelected();
   drawManualLightControl();
   drawDistanceSensorDetection();
-  drawDistanceDetectionGraph(240);
+  if(distanceValue > limitDistance){
+    //draw black screen background
+    fill(0,0,0);
+    stroke(0);
+    rect(515,395,240,130);
+    textSize(14);
+    fill(26, 201, 82);
+    text("Nada dentro del campo de visión", 525, 470);
+    PImage check=loadImage("check.png");
+    image(check,515+96,400,50,50);
+  }else{
+    drawDistanceDetectionGraph(240);
+  }
   if(isXmas){
       PImage xMasFrame=loadImage("christmas-frame-1.png");
       image(xMasFrame,0,0,800,600);
@@ -306,7 +316,19 @@ void showMonitorizationAuto(){
   drawDistanceSensorDetection();
   drawLightSensorDetection();
   drawLightDetectionGraph(240);
-  drawDistanceDetectionGraph(240);
+  if(distanceValue > limitDistance){
+    //draw black screen background
+    fill(0,0,0);
+    stroke(0);
+    rect(515,395,240,130);
+    textSize(14);
+    fill(26, 201, 82);
+    text("Nada dentro del campo de visión", 525, 470);
+    PImage check=loadImage("check.png");
+    image(check,515+96,400,50,50);
+  }else{
+    drawDistanceDetectionGraph(240);
+  }
 }
 
 //Func Description: draws the indication of mode with auto mode selected
