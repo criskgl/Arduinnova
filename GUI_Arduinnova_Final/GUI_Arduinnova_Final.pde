@@ -34,6 +34,8 @@ int secondsSinceStart;
 /*Xmas variables*/
 boolean isXmas = false;
 
+int time = millis();
+
 PrintWriter logFile;//Create file where we will save the logs
 void setup()
 {
@@ -45,25 +47,34 @@ void setup()
  
 void draw()
 {
-  /*Read if there is any value in Serial*/
-  while(port.available() > 0){
-    int opCode = port.read();
-    int byte1 = port.read();
-    int byte2 = port.read();
-    int valueRead = byte1 << 8 | byte2;
-    if(opCode == 0) lightValue = valueRead;
-    if(opCode == 1) {
-      if(valueRead > 150) valueRead = 150;
-      distanceValue = valueRead;
-      if(distanceValue <= limitDistance){
-        if(largas){
-          writeLog(logFile, "LARGAS OFF");
-          largas = false;
-          port.write('l');
+  
+  
+  if (millis() > time + 100)
+  {
+    port.write('8');
+    time = millis();
+    /*Read if there is any value in Serial*/
+    //while(port.available() == 0);
+    while(port.available() > 0){
+      int opCode = port.read();
+      int byte1 = port.read();
+      int byte2 = port.read();
+      int valueRead = byte1 << 8 | byte2;
+      if(opCode == 0) lightValue = valueRead;
+      if(opCode == 1) {
+        if(valueRead > 150) valueRead = 150;
+        distanceValue = valueRead;
+        if(distanceValue <= limitDistance){
+          if(largas){
+            writeLog(logFile, "LARGAS OFF");
+            largas = false;
+            port.write('l');
+          }
         }
       }
     }
   }
+
 
   
   

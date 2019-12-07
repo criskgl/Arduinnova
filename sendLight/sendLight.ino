@@ -86,8 +86,24 @@ void loop() {
         break;
       case 'x': //Xmas mode
         isXmas = !isXmas;
-       
         break;
+      case '8': //Send data
+        //SEND LIGHT LEVEL 3 BYTES [OPCODE=0][BYTE][BYTE]
+        int lightLevel = analogRead(lightAnalogSensorPin);//occupies 2 bytes
+        int firstByte = 0;
+        int secondByte = highByte(lightLevel);
+        int thirdByte = lowByte(lightLevel);
+        Serial.write(firstByte);
+        Serial.write(secondByte);  
+        Serial.write(thirdByte);  
+        //SEND DISTANCE LEVEL 3 BYTES [OPCODE=1][BYTE][BYTE]
+        int d = calculateDistance();
+        firstByte = 1;
+        secondByte = highByte(d);
+        thirdByte = lowByte(d);
+        Serial.write(firstByte);
+        Serial.write(secondByte);  
+        Serial.write(thirdByte);  
       default:
         break;
     }
@@ -97,24 +113,6 @@ void loop() {
     }
   }
 
-  
-  //SEND LIGHT LEVEL 3 BYTES [OPCODE=0][BYTE][BYTE]
-  int lightLevel = analogRead(lightAnalogSensorPin);//occupies 2 bytes
-  int firstByte = 0;
-  int secondByte = highByte(lightLevel);
-  int thirdByte = lowByte(lightLevel);
-  Serial.write(firstByte);
-  Serial.write(secondByte);  
-  Serial.write(thirdByte);  
-  //SEND DISTANCE LEVEL 3 BYTES [OPCODE=1][BYTE][BYTE]
-  int d = calculateDistance();
-  firstByte = 1;
-  secondByte = highByte(d);
-  thirdByte = lowByte(d);
-  Serial.write(firstByte);
-  Serial.write(secondByte);  
-  Serial.write(thirdByte);  
-  delay(1000);
 }
 
 void doRafaga(){
