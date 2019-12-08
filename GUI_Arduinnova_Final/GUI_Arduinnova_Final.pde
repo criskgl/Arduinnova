@@ -40,7 +40,7 @@ PrintWriter logFile;//Create file where we will save the logs
 void setup()
 {
   //println(Serial.list()); //Visualiza los puertos serie disponibles en la consola de abajo
-  port = new Serial(this, Serial.list()[2], 9600); //Abre el puerto serie COM3
+  port = new Serial(this, Serial.list()[2], 16); //Abre el puerto serie COM3
   logFile = createWriter("logFile.txt"); //Create file to save the logs 
   size(800, 600); //Creamos una ventana de 800 píxeles de anchura por 600 píxeles de altura 
 }
@@ -243,7 +243,7 @@ void showMonitorizationManual(){
   drawManualAutoIndicatorManualSelected();
   drawManualLightControl();
   drawDistanceSensorDetection();
-  if(distanceValue > limitDistance){
+  if(distanceValue > 150){
     //draw black screen background
     fill(0,0,0);
     stroke(0);
@@ -327,7 +327,7 @@ void showMonitorizationAuto(){
   drawDistanceSensorDetection();
   drawLightSensorDetection();
   drawLightDetectionGraph(240);
-  if(distanceValue > limitDistance){
+  if(distanceValue > 150){
     //draw black screen background
     fill(0,0,0);
     stroke(0);

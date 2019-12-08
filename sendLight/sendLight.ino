@@ -19,6 +19,9 @@ const int speakerOut = 8;
 
 char GUI_Order = 0;
 
+int dist;
+int light;
+
 
 /*Variables for Christmas mode*/
 // TONES  ========================================== // Start by defining the relationship between
@@ -62,6 +65,7 @@ void setup() {
   pinMode(speakerOut, OUTPUT);
   // put your setup code here, to run once:
   Serial.begin(9600);
+  establishContact();
   
 }
 
@@ -87,23 +91,13 @@ void loop() {
       case 'x': //Xmas mode
         isXmas = !isXmas;
         break;
-      case '8': //Send data
-        //SEND LIGHT LEVEL 3 BYTES [OPCODE=0][BYTE][BYTE]
-        int lightLevel = analogRead(lightAnalogSensorPin);//occupies 2 bytes
-        int firstByte = 0;
-        int secondByte = highByte(lightLevel);
-        int thirdByte = lowByte(lightLevel);
-        Serial.write(firstByte);
-        Serial.write(secondByte);  
-        Serial.write(thirdByte);  
-        //SEND DISTANCE LEVEL 3 BYTES [OPCODE=1][BYTE][BYTE]
-        int d = calculateDistance();
-        firstByte = 1;
-        secondByte = highByte(d);
-        thirdByte = lowByte(d);
-        Serial.write(firstByte);
-        Serial.write(secondByte);  
-        Serial.write(thirdByte);  
+      case 'Z': //Send data
+        light = analogRead(lightAnalogSensorPin)/4;
+        delay(10);
+        dist = calculateDistance();
+        if(dist > 150) dist = 151; 
+        Serial.write(light);
+        Serial.write(dist);
       default:
         break;
     }
@@ -113,6 +107,13 @@ void loop() {
     }
   }
 
+}
+
+void establishContact() {
+  while (Serial.available() <= 0) {
+    Serial.print('Z');   // send a capital Z
+    delay(300);
+  }
 }
 
 void doRafaga(){
