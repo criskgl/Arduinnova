@@ -35,49 +35,25 @@ int secondsSinceStart;
 boolean isXmas = false;
 
 int time = millis();
+int[] serialInArray = new int[2];    // Where we'll put what we receive
+int serialCount = 0;                 // A count of how many bytes we receive        
+boolean firstContact = false;        // Whether we've heard from the microcontroller
 
 PrintWriter logFile;//Create file where we will save the logs
+
+int xAyuda = 0;
+boolean showingHelp = false;
+int lastTab = 1;
 void setup()
 {
   //println(Serial.list()); //Visualiza los puertos serie disponibles en la consola de abajo
-  port = new Serial(this, Serial.list()[2], 16); //Abre el puerto serie COM3
+  port = new Serial(this, Serial.list()[2], 9600); //Abre el puerto serie COM3
   logFile = createWriter("logFile.txt"); //Create file to save the logs 
   size(800, 600); //Creamos una ventana de 800 píxeles de anchura por 600 píxeles de altura 
 }
  
 void draw()
-{
-  
-  
-  if (millis() > time + 100)
-  {
-    port.write('8');
-    time = millis();
-    /*Read if there is any value in Serial*/
-    //while(port.available() == 0);
-    while(port.available() > 0){
-      int opCode = port.read();
-      int byte1 = port.read();
-      int byte2 = port.read();
-      int valueRead = byte1 << 8 | byte2;
-      if(opCode == 0) lightValue = valueRead;
-      if(opCode == 1) {
-        if(valueRead > 150) valueRead = 150;
-        distanceValue = valueRead;
-        if(distanceValue <= limitDistance){
-          if(largas){
-            writeLog(logFile, "LARGAS OFF");
-            largas = false;
-            port.write('l');
-          }
-        }
-      }
-    }
-  }
-
-
-  
-  
+{  
   background(255,255,255);//white background
   //DRAW LOGO
   PImage logo=loadImage("logo.png");
@@ -91,9 +67,19 @@ void draw()
   case 2:
     showLogs();
     break;
+  case 3:
+    showHelp();
+    break;
   default:
-  println("unknown state");
+    println("unknown state");
   }
+  //DRAW help indicator
+  stroke(0,0,0);
+  strokeWeight(1);
+  line(0, 560, 800, 560);
+  textSize(18);
+  fill(0, 0, 0);
+  text("H: HELP", 390, 590);
 }
  
 void mousePressed()//When mouse pressend
@@ -164,6 +150,17 @@ void keyPressed()//When key pressed--handle states
   case 'o': //proximity umbral up
   if(limitDistance + stepUmbralLimitDistance > 150) break;
     limitDistance+=stepUmbralLimitDistance;
+    break;
+  case 'h': //help
+    if(!showingHelp){
+       lastTab = tab;
+       tab = 3;
+       showingHelp = true;
+    }else{
+      tab = lastTab;
+      showingHelp = false;
+    }
+   
     break;
   default:
     break;
@@ -243,6 +240,7 @@ void showMonitorizationManual(){
   drawManualAutoIndicatorManualSelected();
   drawManualLightControl();
   drawDistanceSensorDetection();
+  drawDistanceDetectionGraph(240);
   if(distanceValue > 150){
     //draw black screen background
     fill(0,0,0);
@@ -250,11 +248,9 @@ void showMonitorizationManual(){
     rect(515,395,240,130);
     textSize(14);
     fill(26, 201, 82);
-    text("Nada dentro del campo de visión", 525, 470);
-    PImage check=loadImage("check.png");
-    image(check,515+96,400,50,50);
-  }else{
-    drawDistanceDetectionGraph(240);
+    text("Nada dentro del campo de visión", 525, 515);
+    PImage check=loadImage("blind.png");
+    image(check,515+96,460,50,50);
   }
   if(isXmas){
       PImage xMasFrame=loadImage("christmas-frame-1.png");
@@ -327,6 +323,7 @@ void showMonitorizationAuto(){
   drawDistanceSensorDetection();
   drawLightSensorDetection();
   drawLightDetectionGraph(240);
+  drawDistanceDetectionGraph(240);
   if(distanceValue > 150){
     //draw black screen background
     fill(0,0,0);
@@ -334,12 +331,11 @@ void showMonitorizationAuto(){
     rect(515,395,240,130);
     textSize(14);
     fill(26, 201, 82);
-    text("Nada dentro del campo de visión", 525, 470);
-    PImage check=loadImage("check.png");
-    image(check,515+96,400,50,50);
-  }else{
-    drawDistanceDetectionGraph(240);
+    text("Nada dentro del campo de visión", 525, 515);
+    PImage check=loadImage("blind.png");
+    image(check,515+96,460,50,50);
   }
+  
 }
 
 //Func Description: draws the indication of mode with auto mode selected
@@ -418,7 +414,7 @@ void drawLightDetectionGraph(int xLength){
   fill(0,0,0);
   stroke(0);
   rect(515,230,240,130);
-  //draw char text
+  //draw chart text
   textSize(9);
   fill(255,255,255);
   text("1023", 517, 240);
@@ -451,6 +447,9 @@ void drawLightDetectionGraph(int xLength){
     if( lightDetections.get(i).x < lightDetections.get(i+1).x) 
     line(lightDetections.get(i).x,lightDetections.get(i).y, lightDetections.get(i+1).x,lightDetections.get(i+1).y);
   }
+  textSize(9);
+  fill(255,255,0);
+  text(lightValue, lightDetections.get(lightDetections.size()-1).x, lightDetections.get(lightDetections.size()-1).y);
 }
 
 void drawDistanceDetectionGraph(int xLength){
@@ -458,6 +457,17 @@ void drawDistanceDetectionGraph(int xLength){
   fill(0,0,0);
   stroke(0);
   rect(515,395,240,130);
+  
+  textSize(9);
+  fill(255,255,255);
+  text("150(cm)", 517, 405);
+  fill(255,255,255);
+  text("0(cm)", 517, 522);
+  textSize(10);
+  fill(0,0,0);
+  text("Proximidad", 457, 407);
+  fill(0,0,0);
+  text("t(s)", 740, 540);
   
   /*Draw line with proximity limit*/
   int limitDistanceAdjusted = (((150-limitDistance)*(525-395))/150)+395;
@@ -478,11 +488,23 @@ void drawDistanceDetectionGraph(int xLength){
     }else{
       stroke(230, 32, 18,map(i,0,distanceDetections.size()-1,0,255));//BAD-Something close--red
     }
-    
     strokeWeight(1);
     if( distanceDetections.get(i).x < distanceDetections.get(i+1).x) 
     line(distanceDetections.get(i).x,distanceDetections.get(i).y, distanceDetections.get(i+1).x,distanceDetections.get(i+1).y);
   }
+  
+  textSize(9);
+  if(distanceValue > limitDistance && distanceValue > 150){ 
+    fill(0, 0, 0);
+    text("No hay datos", distanceDetections.get(distanceDetections.size()-1).x, distanceDetections.get(distanceDetections.size()-1).y);
+  }else if(distanceValue > limitDistance){
+    fill(26, 201, 82); 
+    text(distanceValue+" cm", distanceDetections.get(distanceDetections.size()-1).x, distanceDetections.get(distanceDetections.size()-1).y);
+  }else{
+    fill(230, 32, 18);
+    text(distanceValue+" cm", distanceDetections.get(distanceDetections.size()-1).x, distanceDetections.get(distanceDetections.size()-1).y);
+  }
+  
   
 }
 //-------------LOG TAB HANDLING FROM HERE DOWN-------------
@@ -548,3 +570,57 @@ ArrayList<String> parseFile(String fileName){
   }
   return result;
 }
+
+void serialEvent(Serial myPort) {
+  // read a byte from the serial port:
+  int inByte = myPort.read();
+  // if this is the first byte received, and it's an A, clear the serial
+  // buffer and note that you've had first contact from the microcontroller.
+  // Otherwise, add the incoming byte to the array:
+  if (firstContact == false) {
+    if (inByte == 'Z') {
+      myPort.clear();          // clear the serial port buffer
+      firstContact = true;     // you've had first contact from the microcontroller
+      myPort.write('Z');       // ask for more
+    }
+  }
+  else {
+    // Add the latest byte from the serial port to array:
+    serialInArray[serialCount] = inByte;
+    serialCount++;
+
+    // If we have 2 bytes:
+    if (serialCount > 1 ) {
+      lightValue = serialInArray[0]*4;
+      distanceValue = serialInArray[1];
+      if(distanceValue <= limitDistance){
+        if(largas){
+          writeLog(logFile, "LARGAS OFF");
+          largas = false;
+          port.write('l');
+        }
+      }
+      // print the values (for debugging purposes only):
+      //println(lightValue + "\t" + distanceValue);
+
+      // Send a capital A to request new sensor readings:
+      myPort.write('Z');
+      // Reset serialCount:
+      serialCount = 0;
+    }
+  }
+}
+
+void showHelp(){
+  fill(0,0,0);
+  stroke(0);
+  rect(0,0,800,600);
+  
+  textSize(25);
+  fill(255,255,255);
+  text("H:SALIR DE AYUDA", 315, 84);
+  PImage keyboard=loadImage("keyboardHelp.png");
+  keyboard.resize(760, 0);
+  image(keyboard,22,108);
+}
+  
