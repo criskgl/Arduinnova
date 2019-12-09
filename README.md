@@ -1,7 +1,5 @@
 <img src="https://github.com/criskgl/Arduinnova/blob/master/GUI/assets/logo.png" title="Arduinnova" alt="Arduinnova">
 
-***INSERT GRAPHIC HERE (include hyperlink in image)***
-
 # Arduinnova
 
 > Smart light system for a car based on Arduino. Manual + Automatic(looking at Distance proximity+Light exposure)
