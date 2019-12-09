@@ -11,17 +11,16 @@
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org) 
 [![Badges](http://img.shields.io/:badges-9/9-ff6799.svg?style=flat-square)](https://github.com/badges/badgerbadgerbadger)
 
-***INSERT ANOTHER GRAPHIC HERE***
 
 [![manual](https://github.com/criskgl/Arduinnova/blob/master/readmeAssets/manual.png)]()
 
 ---
 
-## Table of Contents (Optional)
+## Table of Contents
 
 > If your `README` has a lot of info, section headers might be nice.
 
-- [Installation](#installation)
+- [setup](#setup)
 - [Features](#features)
 - [Contributing](#contributing)
 - [Team](#team)
@@ -30,6 +29,8 @@
 - [License](#license)
 
 ---
+
+## Setup
 
 ### Clone
 
