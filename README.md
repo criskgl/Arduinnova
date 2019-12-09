@@ -1,7 +1,4 @@
-
-
-
-<img src="https://github.com/criskgl/Arduinnova/tree/master/GUI/assets/logo.png" title="Arduinnova" alt="Arduinnova">
+<img src="https://github.com/criskgl/Arduinnova/blob/master/GUI/assets/logo.png" title="Arduinnova" alt="Arduinnova">
 
 ***INSERT GRAPHIC HERE (include hyperlink in image)***
 
