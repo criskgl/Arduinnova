@@ -18,11 +18,9 @@
 
 ## Table of Contents
 
-> If your `README` has a lot of info, section headers might be nice.
-
-- [setup](#setup)
+- [Setup](#setup)
 - [Features](#features)
-- [Contributing](#settings)
+- [Contributing](#contribuiting)
 - [Support](#support)
 - [License](#license)
 
