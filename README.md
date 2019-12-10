@@ -12,7 +12,7 @@
 [![Badges](http://img.shields.io/:badges-9/9-ff6799.svg?style=flat-square)](https://github.com/badges/badgerbadgerbadger)
 
 
-[![manual](https://github.com/criskgl/Arduinnova/blob/master/readmeAssets/manual.png)]()
+[![intro](https://github.com/criskgl/Arduinnova/blob/master/readmeAssets/intro.gif)]()
 
 ---
 
@@ -22,9 +22,7 @@
 
 - [setup](#setup)
 - [Features](#features)
-- [Contributing](#contributing)
-- [Team](#team)
-- [FAQ](#faq)
+- [Contributing](#settings)
 - [Support](#support)
 - [License](#license)
 
@@ -83,6 +81,9 @@ This system has been simplified to only using one light per type of light. Final
     * The high beam lights can be controlled manually but proximity sensor takes effect on the behaviour in the same way as in manual mode
     * If high beam lights are on and some object is under our limit distance, high beam lights are immediately turned off
 
+* Log history
+
+    [![umbralChange](https://github.com/criskgl/Arduinnova/blob/master/readmeAssets/history.gif)]()
 ## Settings
 
 * Limit bove we consider day can be 
@@ -92,10 +93,14 @@ This system has been simplified to only using one light per type of light. Final
 * Limit below we consider night can be 
     * Increased: press 'n'
     * Decreased: press 'b'
+    
+    [![umbralChange](https://github.com/criskgl/Arduinnova/blob/master/readmeAssets/umbralChange.gif)]()
 
 * Distance limit below which we consider too close: 
     * Increased: press 'o'
     * Decreased: press 'p'
+    
+    [![umbralChange](https://github.com/criskgl/Arduinnova/blob/master/readmeAssets/distanceLimitChange.gif)]()
 
 ---
 
