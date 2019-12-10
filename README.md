@@ -41,6 +41,9 @@
 - You can use any arduino, I recommend arduino UNO beacuse of its simplicity.
 
 
+[![manual](https://github.com/criskgl/Arduinnova/blob/master/readmeAssets/hardwareSetup.png)]()
+
+
 ### Software Setup
 
 - Have the arduino IDE installed on your computer, you can download it <a href="https://www.arduino.cc/en/main/software">here</a>
