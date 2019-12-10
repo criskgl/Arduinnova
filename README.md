@@ -70,11 +70,11 @@ This system has been simplified to only using one light per type of light. Final
     
     * The low beam lights are now controlled by the computer following the next logic:
     
-    🌒 Night limit (light has to stay below that level for 3 seconds to turn on low beam lights)
+    🌒 *Night limit* (light has to stay below that level for 3 seconds to turn on low beam lights) 🌒 
     
     [![umbralNight](https://github.com/criskgl/Arduinnova/blob/master/readmeAssets/umbralDay.gif)]()
 
-    🌞 Day limit (light has to stay above that level for 3 seconds to turn off low beam lights)
+    🌞 *Day limit* (light has to stay above that level for 3 seconds to turn off low beam lights) 🌞
     
     [![umbralDay](https://github.com/criskgl/Arduinnova/blob/master/readmeAssets/umbralNight.gif)]()
     
