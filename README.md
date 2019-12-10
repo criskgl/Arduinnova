@@ -91,9 +91,12 @@ This system has been simplified to only using one light per type of light. Final
 
 🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻
 
-   [![umbralChange](https://github.com/criskgl/Arduinnova/blob/master/readmeAssets/manualXmas.gif)]()
+   [![xMas](https://github.com/criskgl/Arduinnova/blob/master/readmeAssets/manualXmas.gif)]()
    
-   
+* Help screen: If you feel stuck with the interface at any point your are welcope to press H to acces the help pannel.
+
+    [![xMas](https://github.com/criskgl/Arduinnova/blob/master/readmeAssets/help.gif)]()
+
 ## Settings
 
 * Limit bove we consider day can be 
