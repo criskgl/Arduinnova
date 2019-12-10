@@ -34,7 +34,7 @@ int secondsSinceStart;
 /*Xmas variables*/
 boolean isXmas = false;
 
-int time = millis();
+
 int[] serialInArray = new int[2];    // Where we'll put what we receive
 int serialCount = 0;                 // A count of how many bytes we receive        
 boolean firstContact = false;        // Whether we've heard from the microcontroller
@@ -44,6 +44,17 @@ PrintWriter logFile;//Create file where we will save the logs
 int xAyuda = 0;
 boolean showingHelp = false;
 int lastTab = 1;
+
+int time;
+int valueCountedUp = 0;
+boolean countingDownNight = false;
+boolean countDownStartNight = true;
+boolean canPerformNight = false;
+
+boolean countingDownDay = false;
+boolean countDownStartDay = true;
+boolean canPerformDay = false;
+
 void setup()
 {
   //println(Serial.list()); //Visualiza los puertos serie disponibles en la consola de abajo
@@ -54,9 +65,13 @@ void setup()
  
 void draw()
 {  
+  /*
+  println("countingDownNight"+countingDownNight); 
+  println("countDownStartNight"+countDownStartNight);
+  println("canPerformNight"+canPerformNight);*/
   background(255,255,255);//white background
   //DRAW LOGO
-  PImage logo=loadImage("logo.png");
+  PImage logo=loadImage("assets/logo.png");
   image(logo,30,20,200,100);
   
   //show tab selected between monitorization and logs
@@ -73,6 +88,10 @@ void draw()
   default:
     println("unknown state");
   }
+  
+  timerNight();
+  timerDay();
+  
   //DRAW help indicator
   stroke(0,0,0);
   strokeWeight(1);
@@ -82,9 +101,50 @@ void draw()
   text("H: HELP", 390, 590);
 }
  
-void mousePressed()//When mouse pressend
-{
-  
+void timerNight(){
+   /*Logic for timer night*/
+  if(countingDownNight){
+    if(countDownStartNight){
+      println("RESTARTING TIMER NIGHT");
+      time = millis();
+      countDownStartNight = false;
+    }else{
+      if(lightValue > umbralNight){//if while we count the light is not under the night umbral, stop couting and restart
+        countingDownNight = false;
+        countDownStartNight = true;
+        canPerformNight = false;
+      }
+      println("TIME NIGHT:"+(millis()-time));
+      valueCountedUp = (millis()-time)-3;
+      if(millis() > time + 3000){
+        canPerformNight = true;
+        valueCountedUp = 0;
+      }
+    }
+  }
+}
+ 
+void timerDay(){
+  /*Logic for timer day*/
+  if(countingDownDay){
+    if(countDownStartDay){
+      println("RESTARTING TIMER DAY");
+      time = millis();
+      countDownStartDay = false;
+    }else{
+      if(lightValue < umbralDay){//if while we count the light is not over the day umbral, stop couting and restart
+        countingDownDay = false;
+        countDownStartDay = true;
+        canPerformDay = false;
+      }
+      println("TIME DAY:"+(millis()-time));
+      valueCountedUp = (millis()-time)-3;
+      if(millis() > time + 3000){
+        canPerformDay = true;
+        valueCountedUp = 0;
+      }
+    }
+  }
 }
  
 void keyPressed()//When key pressed--handle states
@@ -193,7 +253,7 @@ void drawLightPanel(){
   //Posición Indicator -- ALWAYS ON
   fill(255,165,0);
   strokeWeight(1);
-  PImage lucesPosicionSymbol =loadImage("lucesPosicion.png");
+  PImage lucesPosicionSymbol =loadImage("assets/lucesPosicion.png");
   rect(300, 127, 120, 50);
   image(lucesPosicionSymbol,335,127,50,50);
 
@@ -205,7 +265,7 @@ void drawLightPanel(){
     fill(200,200,200);
     strokeWeight(0);
   }
-  PImage lucesCortasSymbol =loadImage("lucesCortas.png");
+  PImage lucesCortasSymbol =loadImage("assets/lucesCortas.png");
   rect(465, 127, 120, 50);
   image(lucesCortasSymbol,505,127,50,50);
  
@@ -217,7 +277,7 @@ void drawLightPanel(){
     fill(200,200,200);
     strokeWeight(0);
   }
-  PImage lucesLargasSymbol =loadImage("lucesLargas.png");
+  PImage lucesLargasSymbol =loadImage("assets/lucesLargas.png");
   rect(630, 127, 120, 50);
   image(lucesLargasSymbol,670,127,50,50);
 }
@@ -249,11 +309,11 @@ void showMonitorizationManual(){
     textSize(14);
     fill(26, 201, 82);
     text("Nada dentro del campo de visión", 525, 515);
-    PImage check=loadImage("blind.png");
+    PImage check=loadImage("assets/blind.png");
     image(check,515+96,460,50,50);
   }
   if(isXmas){
-      PImage xMasFrame=loadImage("christmas-frame-1.png");
+      PImage xMasFrame=loadImage("assets/christmas-frame-1.png");
       image(xMasFrame,0,0,800,600);
   }
 }
@@ -298,25 +358,38 @@ void showMonitorizationAuto(){
   drawManualAutoIndicatorAutoSelected();
   if(lightValue < umbralNight || lightValue > umbralDay){//exceeding either umbralDay or umbralNight
       if(lightValue < umbralNight) {
-        if(!isUnderUmbralNight){
+        if(!countingDownNight && !cortas){
+          countingDownNight = true;
+        }
+        if(!isUnderUmbralNight && canPerformNight){
+          println("ACTIVANDO CORTASSS");
           cortas = true;//entering umbralNight
           writeLog(logFile, "CORTAS ON");
           port.write('c');
           isUnderUmbralNight = true;
           isOverUmbralDay = false;
+          
+          canPerformNight = false;
+          countingDownNight = false;
+          countDownStartNight = true;
         }
       }
       else{//entering umbralDay
-        if(!isOverUmbralDay){
+        if(!countingDownDay && cortas){
+          countingDownDay = true;
+        }
+        if(!isOverUmbralDay && canPerformDay){
            writeLog(logFile, "CORTAS OFF");
            port.write('c');
            cortas = false; 
            isOverUmbralDay = true;
            isUnderUmbralNight = false;
+           
+           canPerformDay = false;
+           countingDownDay = false;
+           countDownStartDay = true;
         }
-
       }
-      
   }
 
   drawAutoLightControl();
@@ -332,7 +405,7 @@ void showMonitorizationAuto(){
     textSize(14);
     fill(26, 201, 82);
     text("Nada dentro del campo de visión", 525, 515);
-    PImage check=loadImage("blind.png");
+    PImage check=loadImage("assets/blind.png");
     image(check,515+96,460,50,50);
   }
   
@@ -365,7 +438,7 @@ void drawAutoLightControl(){
 
 //Func Descriptions: draws the monitorization for light detection --shows only in auto mode
 void drawLightSensorDetection(){
-  PImage lightDetectionSymbol =loadImage("lightDetectionSymbol.png");
+  PImage lightDetectionSymbol =loadImage("assets/lightDetectionSymbol.png");
   image(lightDetectionSymbol,340,230,35,35);
   fill(0,0,0);
   rect(340, 270, 35, 255);
@@ -386,7 +459,7 @@ void drawLightSensorDetection(){
 
 //Func Descriptions: draws the monitorization for distance detection --shows in both modes
 void drawDistanceSensorDetection(){
-  PImage lightDetectionSymbol =loadImage("distanceDetectionSymbol.png");
+  PImage lightDetectionSymbol =loadImage("assets/distanceDetectionSymbol.png");
   image(lightDetectionSymbol,400,230,35,35);
   fill(0,0,0);
   strokeWeight(1);
@@ -450,6 +523,16 @@ void drawLightDetectionGraph(int xLength){
   textSize(9);
   fill(255,255,0);
   text(lightValue, lightDetections.get(lightDetections.size()-1).x, lightDetections.get(lightDetections.size()-1).y);
+  if(countingDownDay){
+    textSize(11);
+    fill(170,170,170);
+    text((valueCountedUp/1000)+1, lightDetections.get(lightDetections.size()-1).x+22, lightDetections.get(lightDetections.size()-1).y);
+  }
+  if(countingDownNight){
+    textSize(11);
+    fill(170,170,170);
+    text((valueCountedUp/1000)+1, lightDetections.get(lightDetections.size()-1).x+18, lightDetections.get(lightDetections.size()-1).y);
+  }
 }
 
 void drawDistanceDetectionGraph(int xLength){
@@ -619,7 +702,7 @@ void showHelp(){
   textSize(25);
   fill(255,255,255);
   text("H:SALIR DE AYUDA", 315, 84);
-  PImage keyboard=loadImage("keyboardHelp.png");
+  PImage keyboard=loadImage("assets/keyboardHelp.png");
   keyboard.resize(760, 0);
   image(keyboard,22,108);
 }
