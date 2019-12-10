@@ -40,9 +40,9 @@
 
 - You can use any arduino, I recommend arduino UNO beacuse of its simplicity.
 
-
 [![manual](https://github.com/criskgl/Arduinnova/blob/master/readmeAssets/hardwareSetup.png)]()
 
+This system has been simplified to only using one light per type of light. Final picture of the project includes 2 lights per type connected in pararell 2 by 2.
 
 ### Software Setup
 
@@ -50,23 +50,46 @@
 
 - Have the processing IDE installed on your computer, you can download it <a href="https://processing.org/download/">here</a>
 
-- It is very important that you follow the next steps **in order**.
+- It is very important that you follow the next steps **IN ORDER**.
 
-* 1.Upload the code to the arduino using the play button that the arduino IDE provides.
+* **1**. ***Upload the code to the arduino using the play button that the arduino IDE provides.***
 
-* 2.Run the processing code using the play button that the processing IDE provides.
+* **2**. ***Run the processing code using the play button that the processing IDE provides.***
 
 > Now... time to enjoy 😄
 
 ---
 
 ## Features
-## Usage (Optional)
-## Documentation (Optional)
-## Tests (Optional)
 
-- Going into more detail on code and technologies used
-- I utilized this nifty <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet" target="_blank">Markdown Cheatsheet</a> for this sample `README`.
+* Manual mode
+
+    * All the lights can be controlled and Xmas mode is accesible
+    * Only proximity sensor affects the behaviour of this mode not letting the high beam lights turn on
+    * If high beam lights are on and some object is under our limit distance, high beam lights are immediately turned off
+    
+* Auto mode
+    
+    * The low beam lights are now controlled by the computer following the next logic:
+    
+    //INSERT GIF HERE
+    
+    * The high beam lights can be controlled manually but proximity sensor takes effect on the behaviour in the same way as in manual mode
+    * If high beam lights are on and some object is under our limit distance, high beam lights are immediately turned off
+
+## Settings
+
+* Limit bove we consider day can be 
+    * Increased: press 'd'
+    * Decreased: press 's'
+    
+* Limit below we consider night can be 
+    * Increased: press 'n'
+    * Decreased: press 'b'
+
+* Distance limit below which we consider too close: 
+    * Increased: press 'o'
+    * Decreased: press 'p'
 
 ---
 
@@ -97,8 +120,8 @@
 
 Reach out to me at one of the following places!
 
-- Website at <a href="http://fvcproductions.com" target="_blank">`criskgl.github.io`</a>
-
+- Website at <a href="https://criskgl.github.io" target="_blank">`criskgl.github.io`</a>
+- Twitter at <a href="https://twitter.com/cryptocrisK" target="_blank">`cryptocrisK`</a>
 ---
 
 ## License
