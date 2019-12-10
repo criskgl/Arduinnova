@@ -62,7 +62,7 @@ This system has been simplified to only using one light per type of light. Final
 
 * Manual mode
 
-    * All the lights can be controlled and Xmas mode is accesible
+    * All the lights can be controlled
     * Only proximity sensor affects the behaviour of this mode not letting the high beam lights turn on
     * If high beam lights are on and some object is under our limit distance, high beam lights are immediately turned off
     
@@ -84,6 +84,16 @@ This system has been simplified to only using one light per type of light. Final
 * Log history
 
     [![umbralChange](https://github.com/criskgl/Arduinnova/blob/master/readmeAssets/history.gif)]()
+    
+🎅🏻🌲🎄🎁🎅🏻🌲🎄🎁🎅🏻🌲🎄🎁🎅🏻🌲🎄🎁🎅🏻🌲🎄🎁🎅🏻🌲🎄🎁🎅🏻🌲🎄🎁🎅🏻🌲🎄🎁🎅🏻🌲🎄🎁🎅🏻🌲🎄🎁🎅🏻🌲🎄🎁🎅🏻🌲🎄🎁🎅🏻🌲🎄🎁
+
+* **EASTER-EGG**: Xmas mode is accesible in manual mode. We just need to press 'x' and the lights will start dancing to the rythm of jingle bells. 
+
+🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻🎶🎅🏻
+
+   [![umbralChange](https://github.com/criskgl/Arduinnova/blob/master/readmeAssets/manualXmas.gif)]()
+   
+   
 ## Settings
 
 * Limit bove we consider day can be 
